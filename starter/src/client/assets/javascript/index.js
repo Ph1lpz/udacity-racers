@@ -342,12 +342,20 @@ function defaultFetchOpts() {
 
 // TODO - Make a fetch call (with error handling!) to each of the following API endpoints 
 
-function getTracks() {
-	console.log(`calling server :: ${SERVER}/api/tracks`)
-	// GET request to `${SERVER}/api/tracks`
-
+async function getTracks() {
 	// TODO: Fetch tracks
-	// TIP: Don't forget a catch statement!
+	try{
+		let tracks = await fetch(`${SERVER}/api/tracks`)
+		if(!tracks.ok){
+			throw new Error('error while fetching tracks')
+		}
+		tracks = tracks.json()
+		return tracks
+	}catch(e){
+		const error = e.message
+		console.error(error)
+		return;
+	}
 }
 
 async function getRacers() {	
@@ -355,17 +363,16 @@ async function getRacers() {
 	try{
 		let racers = await fetch(`${SERVER}/api/cars`)
 		if(!racers.ok){
-			console.error('error while fetching racers')
-			return;
+			throw new Error('error while fetching racers')
 		}
 		racers = racers.json()
 		return racers
 	}catch(e){
-		console.error('error while fetching racers: ' , e)
+		const error = e.message
+		console.error(error)
 		return;
 	}
 }
-getRacers().then(result => console.log(result))
 
 function createRace(player_id, track_id) {
 	player_id = parseInt(player_id)
