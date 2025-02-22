@@ -1,5 +1,4 @@
 // PROVIDED CODE BELOW (LINES 1 - 80) DO NOT REMOVE
-
 // The store will hold all information needed globally
 let store = {
 	track_id: undefined,
@@ -122,7 +121,7 @@ async function handleCreateRace() {
 function runRace(raceID) {
 	return new Promise(resolve => {
 	// TODO - use Javascript's built in setInterval method to get race info (getRace function) every 500ms
-
+		const raceInterval = setInterval(getRace(), 500);
 	/* 
 		TODO - if the race info status property is "in-progress", update the leaderboard by calling:
 
@@ -353,34 +352,14 @@ function defaultFetchOpts() {
 
 async function getTracks() {
 	// TODO: Fetch tracks
-	try{
-		let tracks = await fetch(`${SERVER}/api/tracks`)
-		if(!tracks.ok){
-			throw new Error('error while fetching tracks')
-		}
-		tracks = tracks.json()
-		return tracks
-	}catch(e){
-		const error = e.message
-		console.error(error)
-		return;
-	}
+	const tracks = await dataFetcher(`${SERVER}/api/tracks` , 'error while fetching tracks')
+	return tracks
 }
 
 async function getRacers() {	
 	// TODO: Fetch racers
-	try{
-		let racers = await fetch(`${SERVER}/api/cars`)
-		if(!racers.ok){
-			throw new Error('error while fetching racers')
-		}
-		racers = racers.json()
-		return racers
-	}catch(e){
-		const error = e.message
-		console.error(error)
-		return;
-	}
+	const racers = await dataFetcher(`${SERVER}/api/cars` , 'error while fetching racers' )
+	return racers
 }
 
 function createRace(player_id, track_id) {
@@ -398,7 +377,7 @@ function createRace(player_id, track_id) {
 	.catch(err => console.log("Problem with createRace request::", err))
 }
 
-function getRace(id) {
+async function getRace(id) {
 	// GET request to `${SERVER}/api/races/${id}`
 }
 
@@ -416,3 +395,26 @@ function accelerate(id) {
 	// options parameter provided as defaultFetchOpts
 	// no body or datatype needed for this request
 }
+
+//? helper functions
+
+/**
+ * 
+ * @param {string} url 
+ * @param {string} errMsg 
+ * @returns {JSON}
+ */
+const dataFetcher = async (url , errMsg) => {
+    try{
+        let data = await fetch(url)
+        if(!data.ok){
+            throw new Error(errMsg)
+        }
+        data = data.json()
+        return data
+    }catch(e){
+        console.error(e.message)
+		return;
+    }
+}
+
